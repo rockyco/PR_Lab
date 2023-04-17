@@ -20,7 +20,8 @@ pr4：同时熄灭LED2和LED3。
 
 系统时钟sysclk（125MHz）作为输入时钟，BTN0作为LED控制逻辑的复位。
 
-<img src="img/image-20230416222203423.png" alt="image-20230416222203423" style="zoom:80%;" />
+////<img src="img/image-20230416222203423.png" alt="image-20230416222203423" style="zoom:80%;" />
+![img1](/../master/path/img/image-20230416222203423.png?raw=true "Optional Title")
 
 管脚约束：
 
