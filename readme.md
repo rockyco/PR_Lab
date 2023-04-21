@@ -1,4 +1,4 @@
-# pynq-z2重构
+# PYNQ-Z2重构
 
 ## 实现功能
 
@@ -20,7 +20,8 @@ pr4：同时熄灭LED2和LED3。
 
 系统时钟sysclk（125MHz）作为输入时钟，BTN0作为LED控制逻辑的复位。
 
-<img src="img/image-20230416222203423.png" alt="image-20230416222203423" style="zoom:80%;" />
+![image-20230416222203423](https://user-images.githubusercontent.com/13341030/233682685-a0122fb8-3679-4b40-a01e-9add0fd45fc5.png)
+
 
 管脚约束：
 
@@ -35,52 +36,64 @@ LED0:R14；LED1:P14；LED2:N16；LED3:M14；SYS_CLK:H16；BTN0:D19
 
 要实现嵌入式Linux系统，首先需要在工程中添加ZYNQ7 Processing System器件。
 
-![image-20230417180624655](img/image-20230417180624655.png)
+![image-20230417180624655](https://user-images.githubusercontent.com/13341030/233682826-35f95bab-3763-4e20-ab6d-ae27f9e90bb4.png)
+
 
 - 根据需求开启需要的接口。
 - 完成后验证保存Block Design设计。依次点击Generate Output Products和Create HDL Wrapper，生成对应的模块代码。
 
-![image-20230417181036758](img/image-20230417181036758.png)
+![image-20230417181036758](https://user-images.githubusercontent.com/13341030/233682904-b9eefab5-9274-4514-97a6-ba39b5c8ad68.png)
+
 
 - 修改顶层模块，增加bd模块的例化。
 
 注：不添加Block Design设计，无法导出硬件生成hdf文件。问题现象如下：
 
-<img src="img/image-20230417181656335.png" alt="image-20230417181656335" style="zoom: 80%;" />
+![image-20230417181656335](https://user-images.githubusercontent.com/13341030/233683018-be6824ef-968a-453d-8a8a-c5ab8100fa24.png)
+
 
 ## 项目模式PL端设计
 
 1、新建工程，点击Tools->Enable Partial Reconfiguration，使能后如下所示，增加了Partial Reconfiguration Wizard选项
 
-![image-20230416221358868](img/image-20230416221358868.png)
+![image-20230416221358868](https://user-images.githubusercontent.com/13341030/233683080-c1986d87-3184-4d90-aa90-64686b5a36c2.png)
+
 
 2、导入代码文件，右键点击选择做重构的模块，选择Create Partition Definition。
 
-<img src="img/image-20230416221539417.png" alt="image-20230416221539417" style="zoom:67%;" />
+![image-20230416221539417](https://user-images.githubusercontent.com/13341030/233683139-cf628067-0466-413d-9074-22756905b196.png)
+
 
 3、点击Partial Reconfiguration Wizard选项，添加多个重构的代码文件，根据提示进行以下操作。
 
-<img src="img/image-20230416221619277.png" alt="image-20230416221619277" style="zoom:80%;" />
+![image-20230416221619277](https://user-images.githubusercontent.com/13341030/233683199-a5146357-42ae-48b4-b9ae-6d0b3de1ea48.png)
 
-<img src="img/image-20230416221641065.png" alt="image-20230416221641065" style="zoom:80%;" />
 
-<img src="img/image-20230416221656420.png" alt="image-20230416221656420" style="zoom:80%;" />
+![image-20230416221641065](https://user-images.githubusercontent.com/13341030/233683258-85b6fbdf-39d7-4f7a-8bbd-b2009c9cdd08.png)
+
+
+![image-20230416221656420](https://user-images.githubusercontent.com/13341030/233683338-6b6be742-0968-4c21-b7c3-0b32385c8018.png)
+
 
 4、进行综合，完成综合后打开综合设计，通过以下操作，进行动态区划分：
 
 - 画出一块作为Pblock
 
-<img src="img/image-20230416222733845.png" alt="image-20230416222733845" style="zoom:67%;" />
+![image-20230416222733845](https://user-images.githubusercontent.com/13341030/233683385-db0145f8-4b3a-4a91-96e0-899536c39a34.png)
 
-![image-20230416222839056](img/image-20230416222839056.png)
+
+![image-20230416222839056](https://user-images.githubusercontent.com/13341030/233683435-06f32be7-29b5-4856-bc64-d4b0d7f2914c.png)
+
 
 - 选中Pblock之后，更改Pblock的属性，勾选中RESET_AFTER_RECONFIG，将SNAPPING_MODE改为Routing（或者设为On）
 
-<img src="img/image-20230416222925057.png" alt="image-20230416222925057" style="zoom:67%;" />
+![image-20230416222925057](https://user-images.githubusercontent.com/13341030/233683500-e3249123-f24f-4eba-a2d4-ecd5fe1e0406.png)
+
 
 - 点击左侧Open Syntheszed Design ->Report DRC，验证Pblock创建是否有效。如果提示No Violations Found，则说明上面的操作过程没有问题。
 
-<img src="img/image-20230416223032814.png" alt="image-20230416223032814" style="zoom:50%;" />
+![image-20230416223032814](https://user-images.githubusercontent.com/13341030/233683552-73282c5f-2b61-4cc1-b02b-3d5ac839c578.png)
+
 
 - 保存Pblock设计，添加到约束文件中。
 
@@ -241,9 +254,11 @@ ZYNQ系列板卡在完成嵌入式系统设计后，PL端受控于PS端，可以
 
 但Linux  FPGA Manager 在ZYNQ系列板卡上**只支持整体bit流的加载，不支持部分bit流的重构**。
 
-![image-20230417184836674](img/image-20230417184836674.png)
+![image-20230417184836674](https://user-images.githubusercontent.com/13341030/233683669-dff53165-2cbd-4107-b4dd-8efe10736841.png)
 
-![image-20230416124109065](img/image-20230416124109065.png)
+
+![image-20230416124109065](https://user-images.githubusercontent.com/13341030/233683722-5f11272e-4836-4079-b440-9f18e0e5fcd3.png)
+
 
 经过尝试，**通过AXI_HWICAP IP核也无法实现动态重构**。
 
